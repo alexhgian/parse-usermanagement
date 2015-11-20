@@ -91,6 +91,8 @@ Parse.Cloud.define("updateUser", function(request, response) {
     var newUsername = request.params.username;
     var newEmail = request.params.email;
     var newPassword = request.params.password;
+    //Temporary, will use roles in v2
+    var access = request.params.access;
     var User = Parse.Object.extend("_User");
     var query = new Parse.Query(User);
 
@@ -110,6 +112,10 @@ Parse.Cloud.define("updateUser", function(request, response) {
             if(newPassword && newPassword.length > 0){
                 data.set('password', newPassword);
 
+            }
+
+            if(access && access.length > 0){
+                data.set('access', access);
             }
 
             data.save(null, {
