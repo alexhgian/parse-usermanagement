@@ -97,3 +97,16 @@ Parse.Cloud.define("updateUser", function(request, response) {
         }
     });
 });
+
+Parse.Cloud.define("authFacebook", function(request, response) {
+
+});
+
+Parse.Cloud.define("authLinkedIn", function(request, response) {
+
+});
+
+
+Parse.Cloud.define("authTwitter", function(request, response) {
+
+});
