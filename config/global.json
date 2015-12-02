@@ -3,12 +3,12 @@
     "parseVersion": "1.5.0"
   },
   "applications": {
-    "MedConf-Development": {
-      "applicationId": "341E4A86uPW4m5xKuTy7XvoqjjKgSuEZZ1Me0q5W",
-      "masterKey": "c7eje2lihzeGrWmsuL4nRy2GNCR3rmUoI7irMYPH"
+    "STSI-Clone": {
+      "applicationId": "OxZLwjHXEjFjuFExxotUrwvOlxdT2efPN8pv06JI",
+      "masterKey": "8Pql3gQjlPp7vAYEtTBCW8o90ufMP4d1dY5nf8Or"
     },
     "_default": {
-      "link": "MedConf-Development"
+      "link": "STSI-Clone"
     }
   }
 }
