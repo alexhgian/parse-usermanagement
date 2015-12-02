@@ -1,4 +1,3 @@
-
 Parse.Cloud.useMasterKey();
 
 // EndPoint:
@@ -6,22 +5,22 @@ Parse.Cloud.useMasterKey();
 //
 // Body:
 // { userId : 1234 }
-Parse.Cloud.define("deleteUser", function(request, response) {
+Parse.Cloud.define("deleteUser", function (request, response) {
     var uid = request.params.userId;
     var User = Parse.Object.extend("_User");
     var query = new Parse.Query(User);
 
 
     query.get(uid, {
-        success: function(data) {
+        success: function (data) {
             // The object was retrieved successfully.
             console.log(data);
             data.destroy({
-                success: function(myObject) {
+                success: function (myObject) {
                     // The object was deleted from the Parse Cloud.
                     response.success(myObject);
                 },
-                error: function(myObject, error) {
+                error: function (myObject, error) {
                     // The delete failed.
                     // error is a Parse.Error with an error code and message.
                     response.error(error);
@@ -29,7 +28,7 @@ Parse.Cloud.define("deleteUser", function(request, response) {
             });
 
         },
-        error: function(object, error) {
+        error: function (object, error) {
             // The object was not retrieved successfully.
             // error is a Parse.Error with an error code and message.
             response.error(error);
@@ -39,7 +38,7 @@ Parse.Cloud.define("deleteUser", function(request, response) {
 
 // EndPoint:
 //  https://api.parse.com/1/functions/updateUser
-// 
+//
 // Body:
 // {
 //     username : "John Doe",
@@ -47,7 +46,7 @@ Parse.Cloud.define("deleteUser", function(request, response) {
 //     password: "myNewPassword"
 // }
 
-Parse.Cloud.define("updateUser", function(request, response) {
+Parse.Cloud.define("updateUser", function (request, response) {
     var uid = request.params.userId;
     var newUsername = request.params.username;
     var newEmail = request.params.email;
@@ -59,54 +58,41 @@ Parse.Cloud.define("updateUser", function(request, response) {
 
 
     query.get(uid, {
-        success: function(data) {
+        success: function (data) {
             // The object was retrieved successfully.
-            if(newUsername && newUsername.length > 0){
+            if (newUsername && newUsername.length > 0) {
                 data.set('username', newUsername);
 
             }
-            if(newEmail && newEmail.length > 0){
+            if (newEmail && newEmail.length > 0) {
                 data.set('email', newEmail);
 
             }
 
-            if(newPassword && newPassword.length > 0){
+            if (newPassword && newPassword.length > 0) {
                 data.set('password', newPassword);
 
             }
 
-            if(access && access.length > 0){
+            if (access && access.length > 0) {
                 data.set('access', access);
             }
 
             data.save(null, {
-                success : function(data1){
+                success: function (data1) {
                     console.log('success');
                     console.log(data1);
                     response.success(data1);
                 },
-                error : function(object, error) {
+                error: function (object, error) {
                     response.error(error);
                 }
             });
         },
-        error: function(object, error) {
+        error: function (object, error) {
             // The object was not retrieved successfully.
             // error is a Parse.Error with an error code and message.
             response.error(error);
         }
     });
-});
-
-Parse.Cloud.define("authFacebook", function(request, response) {
-
-});
-
-Parse.Cloud.define("authLinkedIn", function(request, response) {
-
-});
-
-
-Parse.Cloud.define("authTwitter", function(request, response) {
-
 });
