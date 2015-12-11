@@ -96,3 +96,32 @@ Parse.Cloud.define("updateUser", function (request, response) {
         }
     });
 });
+
+Parse.Cloud.define("authorizeLinkedIn", function(request, response){
+
+    var IN_CLIENT = '758xwl5qajsppp';
+    var IN_SECRET = 'xQUq2PN5hyDlbQL8';
+
+    Parse.Cloud.httpRequest({
+        method: 'POST',
+        url: 'https://www.linkedin.com/uas/oauth2/accessToken',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+        },
+        params: {
+           client_id: IN_CLIENT,
+           client_secret: IN_SECRET,
+           redirect_uri: request.params.redirectUri,
+           grant_type: 'authorization_code',
+           code: request.params.code
+        }
+    }).then(function(httpResponse) {
+        console.log(httpResponse.text);
+        response.success(httpResponse.data);
+    }, function(httpResponse) {
+        console.error('Request failed with response code ' + httpResponse.status);
+        response.error(httpResponse);
+    });
+
+
+});
