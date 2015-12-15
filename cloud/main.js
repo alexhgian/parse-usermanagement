@@ -97,7 +97,39 @@ Parse.Cloud.define("updateUser", function (request, response) {
     });
 });
 
-Parse.Cloud.define("authorizeLinkedIn", function(request, response){
+
+Parse.Cloud.afterSave(Parse.User, function (request) {
+    Parse.Cloud.useMasterKey();
+
+    query = new Parse.Query(Parse.Role);
+    if (request.user.userType === 'app') {
+        query.equalTo("name", "User");
+    } else if (request.user.userType === 'cms') {
+        if (request.user.access === 'admin') {
+            query.equalTo("name", "Admin");
+        } else if (request.user.access === 'staff') {
+            query.equalTo("name", "Editor");
+        } else if (request.user.access === 'moderator') {
+            query.equalTo("name", "Mod");
+        }
+    }
+    query.first({
+        success: function (object) {
+
+            object.relation("users").add(request.user);
+
+            object.save();
+
+
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+});
+
+
+Parse.Cloud.define("authorizeLinkedIn", function (request, response) {
 
     var IN_CLIENT = '758xwl5qajsppp';
     var IN_SECRET = 'xQUq2PN5hyDlbQL8';
@@ -109,19 +141,36 @@ Parse.Cloud.define("authorizeLinkedIn", function(request, response){
             'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
         },
         params: {
-           client_id: IN_CLIENT,
-           client_secret: IN_SECRET,
-           redirect_uri: request.params.redirectUri,
-           grant_type: 'authorization_code',
-           code: request.params.code
+            client_id: IN_CLIENT,
+            client_secret: IN_SECRET,
+            redirect_uri: request.params.redirectUri,
+            grant_type: 'authorization_code',
+            code: request.params.code
         }
-    }).then(function(httpResponse) {
+    }).then(function (httpResponse) {
         console.log(httpResponse.text);
         response.success(httpResponse.data);
-    }, function(httpResponse) {
+    }, function (httpResponse) {
         console.error('Request failed with response code ' + httpResponse.status);
         response.error(httpResponse);
     });
 
 
+});
+
+
+Parse.Cloud.define("getLinkedInProfile", function (request, response) {
+    Parse.Cloud.httpRequest({
+        method: 'GET',
+        url: 'https://api.linkedin.com/v1/people/~:(' + request.params.fields + ')?format=json',
+        headers: {
+            Authorization: 'Bearer ' + request.params.token
+        }
+    }).then(function (httpResponse) {
+        console.log(httpResponse.text);
+        response.success(httpResponse.data);
+    }, function (httpResponse) {
+        console.error('Request failed with response code ' + httpResponse.status);
+        response.error(httpResponse.status);
+    });
 });
