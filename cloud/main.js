@@ -99,9 +99,8 @@ Parse.Cloud.define("updateUser", function (request, response) {
 
 
 Parse.Cloud.afterSave(Parse.User, function (request) {
-    Parse.Cloud.useMasterKey();
 
-    query = new Parse.Query(Parse.Role);
+    var query = new Parse.Query(Parse.Role);
     if (request.user.userType === 'app') {
         query.equalTo("name", "User");
     } else if (request.user.userType === 'cms') {
@@ -117,7 +116,6 @@ Parse.Cloud.afterSave(Parse.User, function (request) {
         success: function (object) {
 
             object.relation("users").add(request.user);
-
             object.save();
 
 
