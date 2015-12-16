@@ -101,29 +101,28 @@ Parse.Cloud.define("updateUser", function (request, response) {
 Parse.Cloud.afterSave(Parse.User, function (request) {
 
     var query = new Parse.Query(Parse.Role);
-    if (request.user.userType === 'app') {
+
+    if (request.user.get('userType') === 'app') {
         query.equalTo("name", "User");
-    } else if (request.user.userType === 'cms') {
-        if (request.user.access === 'admin') {
+    } else if (request.user.get('userType') === 'cms') {
+        if (request.user.get('access')  === 'admin') {
             query.equalTo("name", "Admin");
-        } else if (request.user.access === 'staff') {
+        } else if (request.user.get('access') === 'staff') {
             query.equalTo("name", "Editor");
-        } else if (request.user.access === 'moderator') {
+        } else if (request.user.get('access') === 'moderator') {
             query.equalTo("name", "Mod");
         }
     }
     query.first({
         success: function (object) {
-
             object.relation("users").add(request.user);
             object.save();
-
-
         },
         error: function (error) {
             throw "Got an error " + error.code + " : " + error.message;
         }
     });
+
 });
 
 
