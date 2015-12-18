@@ -125,6 +125,28 @@ Parse.Cloud.afterSave(Parse.User, function (request) {
 
 });
 
+Parse.Cloud.afterSave('Organization', function (request) {
+
+    var Object = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleReadAccess('User', true);
+            object.setACL(acl);
+            object.save();
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
 
 Parse.Cloud.afterSave('Conference', function (request) {
 
@@ -556,8 +578,6 @@ Parse.Cloud.afterSave('Votes', function (request) {
             acl.setRoleReadAccess('Mod', true);
             acl.setRoleWriteAccess('User', true);
             acl.setRoleReadAccess('User', true);
-            acl.setRoleWriteAccess('STSIAdmin', true);
-            acl.setRoleReadAccess('STSIAdmin', true);
             object.setACL(acl);
             object.save();
 
