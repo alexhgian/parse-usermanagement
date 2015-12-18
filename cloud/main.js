@@ -345,7 +345,7 @@ Parse.Cloud.afterSave('MasterNotification', function (request) {
         }
     });
 
-})
+});
 
 
 Parse.Cloud.afterSave('Note', function (request) {
