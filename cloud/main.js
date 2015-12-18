@@ -138,6 +138,7 @@ Parse.Cloud.afterSave('Conference', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -173,6 +174,7 @@ Parse.Cloud.afterSave('DBQuestion', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -211,6 +213,7 @@ Parse.Cloud.afterSave('DiscussionBoard', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -252,6 +255,7 @@ Parse.Cloud.afterSave('Event', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -322,6 +326,7 @@ Parse.Cloud.afterSave('MasterNotification', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -431,6 +436,7 @@ Parse.Cloud.afterSave('Session', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -465,6 +471,7 @@ Parse.Cloud.afterSave('Speaker', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -499,6 +506,7 @@ Parse.Cloud.afterSave('Sponsor', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -533,6 +541,7 @@ Parse.Cloud.afterSave('TravelBusiness', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
@@ -567,6 +576,7 @@ Parse.Cloud.afterSave('Votes', function (request) {
         success: function (object) {
             var acl = new Parse.ACL();
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('Editor', true);
