@@ -101,11 +101,13 @@ Parse.Cloud.define("updateUser", function (request, response) {
 Parse.Cloud.afterSave(Parse.User, function (request) {
 
     var query = new Parse.Query(Parse.Role);
+    var Organization  = Parse.Object.extend('Organization');
+    var queryOrg =  new Parse.Query(Organization);
 
     if (request.user.get('userType') === 'app') {
         query.equalTo("name", "User");
     } else if (request.user.get('userType') === 'cms') {
-        if (request.user.get('access')  === 'admin') {
+        if (request.user.get('access') === 'admin') {
             query.equalTo("name", "Admin");
         } else if (request.user.get('access') === 'staff') {
             query.equalTo("name", "Editor");
@@ -117,6 +119,473 @@ Parse.Cloud.afterSave(Parse.User, function (request) {
         success: function (object) {
             object.relation("users").add(request.user);
             object.save();
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
+Parse.Cloud.afterSave('Conference', function (request) {
+
+    var Object  = Parse.Object.extend('Conference');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
+Parse.Cloud.afterSave('DBQuestion', function (request) {
+
+    var Object  = Parse.Object.extend('DBQuestion');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleWriteAccess('Mod', true);
+            acl.setRoleReadAccess('Mod', true);
+            acl.setRoleReadAccess('User', true);
+            acl.setRoleWriteAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
+Parse.Cloud.afterSave('DiscussionBoard', function (request) {
+
+    var Object  = Parse.Object.extend('DiscussionBoard');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleWriteAccess('Mod', true);
+            acl.setRoleReadAccess('Mod', true);
+            acl.setRoleReadAccess('User', true);
+            acl.setRoleWriteAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
+
+
+
+Parse.Cloud.afterSave('Event', function (request) {
+
+    var Object  = Parse.Object.extend('Event');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
+Parse.Cloud.afterSave('LinkedInUser', function (request) {
+
+    var Object  = Parse.Object.extend('LinkedInUser');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicReadAccess(false);
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('User', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
+Parse.Cloud.afterSave('MasterNotification', function (request) {
+
+    var Object  = Parse.Object.extend('MasterNotification');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleReadAccess('User', true);
+
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+})
+
+
+Parse.Cloud.afterSave('Note', function (request) {
+
+    var Object  = Parse.Object.extend('Note');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicReadAccess(false);
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('User', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
+Parse.Cloud.afterSave('Notification', function (request) {
+
+    var Object  = Parse.Object.extend('Notification');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleWriteAccess('User', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
+
+Parse.Cloud.afterSave('Session', function (request) {
+
+    var Object  = Parse.Object.extend('Session');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+Parse.Cloud.afterSave('Speaker', function (request) {
+
+    var Object  = Parse.Object.extend('Speaker');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+Parse.Cloud.afterSave('Sponsor', function (request) {
+
+    var Object  = Parse.Object.extend('Sponsor');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+Parse.Cloud.afterSave('TravelBusiness', function (request) {
+
+    var Object  = Parse.Object.extend('TravelBusiness');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+Parse.Cloud.afterSave('Votes', function (request) {
+
+    var Object  = Parse.Object.extend('TravelBusiness');
+    var Organization  = Parse.Object.extend('Organization');
+    var queryObj = new Parse.Query(Object);
+    var queryOrg =  new Parse.Query(Organization);
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleWriteAccess('Mod', true);
+            acl.setRoleReadAccess('Mod', true);
+            acl.setRoleWriteAccess('User', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            queryOrg.get(object.get('organization').id).then(function(org){
+                if(org.get('name') === 'STSI'){
+                    acl.setRoleWriteAccess('STSIAdmin', true);
+                    acl.setRoleReadAccess('STSIAdmin', true);
+                    object.setACL(acl);
+                    object.save();
+                }
+            });
         },
         error: function (error) {
             throw "Got an error " + error.code + " : " + error.message;
