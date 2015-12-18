@@ -101,8 +101,6 @@ Parse.Cloud.define("updateUser", function (request, response) {
 Parse.Cloud.afterSave(Parse.User, function (request) {
 
     var query = new Parse.Query(Parse.Role);
-    var Organization  = Parse.Object.extend('Organization');
-    var queryOrg =  new Parse.Query(Organization);
 
     if (request.user.get('userType') === 'app') {
         query.equalTo("name", "User");
@@ -130,10 +128,8 @@ Parse.Cloud.afterSave(Parse.User, function (request) {
 
 Parse.Cloud.afterSave('Conference', function (request) {
 
-    var Object  = Parse.Object.extend('Conference');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('Conference');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -147,8 +143,8 @@ Parse.Cloud.afterSave('Conference', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
+            object.get('organization').fetch().then(function (org) {
+                if (org.get('name') === 'STSI') {
                     acl.setRoleWriteAccess('STSIAdmin', true);
                     acl.setRoleReadAccess('STSIAdmin', true);
                     object.setACL(acl);
@@ -166,10 +162,8 @@ Parse.Cloud.afterSave('Conference', function (request) {
 
 Parse.Cloud.afterSave('DBQuestion', function (request) {
 
-    var Object  = Parse.Object.extend('DBQuestion');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('DBQuestion');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -186,13 +180,15 @@ Parse.Cloud.afterSave('DBQuestion', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -205,10 +201,8 @@ Parse.Cloud.afterSave('DBQuestion', function (request) {
 
 Parse.Cloud.afterSave('DiscussionBoard', function (request) {
 
-    var Object  = Parse.Object.extend('DiscussionBoard');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('DiscussionBoard');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -225,13 +219,15 @@ Parse.Cloud.afterSave('DiscussionBoard', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -242,15 +238,10 @@ Parse.Cloud.afterSave('DiscussionBoard', function (request) {
 });
 
 
-
-
-
 Parse.Cloud.afterSave('Event', function (request) {
 
-    var Object  = Parse.Object.extend('Event');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('Event');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -264,13 +255,15 @@ Parse.Cloud.afterSave('Event', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -283,10 +276,8 @@ Parse.Cloud.afterSave('Event', function (request) {
 
 Parse.Cloud.afterSave('LinkedInUser', function (request) {
 
-    var Object  = Parse.Object.extend('LinkedInUser');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('LinkedInUser');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -296,17 +287,9 @@ Parse.Cloud.afterSave('LinkedInUser', function (request) {
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('User', true);
             acl.setRoleReadAccess('User', true);
+            object.setACL(acl);
+            object.save();
 
-            //Get Organization
-            //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
-            });
         },
         error: function (error) {
             throw "Got an error " + error.code + " : " + error.message;
@@ -318,10 +301,8 @@ Parse.Cloud.afterSave('LinkedInUser', function (request) {
 
 Parse.Cloud.afterSave('MasterNotification', function (request) {
 
-    var Object  = Parse.Object.extend('MasterNotification');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('MasterNotification');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -336,13 +317,15 @@ Parse.Cloud.afterSave('MasterNotification', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -355,10 +338,8 @@ Parse.Cloud.afterSave('MasterNotification', function (request) {
 
 Parse.Cloud.afterSave('Note', function (request) {
 
-    var Object  = Parse.Object.extend('Note');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('Note');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -368,17 +349,10 @@ Parse.Cloud.afterSave('Note', function (request) {
             acl.setRoleReadAccess('Admin', true);
             acl.setRoleWriteAccess('User', true);
             acl.setRoleReadAccess('User', true);
+            object.setACL(acl);
+            object.save();
 
-            //Get Organization
-            //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
-            });
+
         },
         error: function (error) {
             throw "Got an error " + error.code + " : " + error.message;
@@ -390,10 +364,8 @@ Parse.Cloud.afterSave('Note', function (request) {
 
 Parse.Cloud.afterSave('Notification', function (request) {
 
-    var Object  = Parse.Object.extend('Notification');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('Notification');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -408,13 +380,15 @@ Parse.Cloud.afterSave('Notification', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -425,13 +399,10 @@ Parse.Cloud.afterSave('Notification', function (request) {
 });
 
 
-
 Parse.Cloud.afterSave('Session', function (request) {
 
-    var Object  = Parse.Object.extend('Session');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('Session');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -445,13 +416,15 @@ Parse.Cloud.afterSave('Session', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -463,10 +436,8 @@ Parse.Cloud.afterSave('Session', function (request) {
 
 Parse.Cloud.afterSave('Speaker', function (request) {
 
-    var Object  = Parse.Object.extend('Speaker');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('Speaker');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -480,13 +451,15 @@ Parse.Cloud.afterSave('Speaker', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -498,10 +471,8 @@ Parse.Cloud.afterSave('Speaker', function (request) {
 
 Parse.Cloud.afterSave('Sponsor', function (request) {
 
-    var Object  = Parse.Object.extend('Sponsor');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('Sponsor');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -515,13 +486,15 @@ Parse.Cloud.afterSave('Sponsor', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -533,10 +506,8 @@ Parse.Cloud.afterSave('Sponsor', function (request) {
 
 Parse.Cloud.afterSave('TravelBusiness', function (request) {
 
-    var Object  = Parse.Object.extend('TravelBusiness');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('TravelBusiness');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -550,13 +521,15 @@ Parse.Cloud.afterSave('TravelBusiness', function (request) {
 
             //Get Organization
             //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
+            object.get('conference').fetch().then(function (conf) {
+                conf.get('organization').fetcn().then(function (org) {
+                    if (org.get('name') === 'STSI') {
+                        acl.setRoleWriteAccess('STSIAdmin', true);
+                        acl.setRoleReadAccess('STSIAdmin', true);
+                        object.setACL(acl);
+                        object.save();
+                    }
+                });
             });
         },
         error: function (error) {
@@ -568,10 +541,8 @@ Parse.Cloud.afterSave('TravelBusiness', function (request) {
 
 Parse.Cloud.afterSave('Votes', function (request) {
 
-    var Object  = Parse.Object.extend('TravelBusiness');
-    var Organization  = Parse.Object.extend('Organization');
+    var Object = Parse.Object.extend('TravelBusiness');
     var queryObj = new Parse.Query(Object);
-    var queryOrg =  new Parse.Query(Organization);
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
@@ -585,17 +556,11 @@ Parse.Cloud.afterSave('Votes', function (request) {
             acl.setRoleReadAccess('Mod', true);
             acl.setRoleWriteAccess('User', true);
             acl.setRoleReadAccess('User', true);
+            acl.setRoleWriteAccess('STSIAdmin', true);
+            acl.setRoleReadAccess('STSIAdmin', true);
+            object.setACL(acl);
+            object.save();
 
-            //Get Organization
-            //Assign Organization role to ACL
-            queryOrg.get(object.get('organization').id).then(function(org){
-                if(org.get('name') === 'STSI'){
-                    acl.setRoleWriteAccess('STSIAdmin', true);
-                    acl.setRoleReadAccess('STSIAdmin', true);
-                    object.setACL(acl);
-                    object.save();
-                }
-            });
         },
         error: function (error) {
             throw "Got an error " + error.code + " : " + error.message;
