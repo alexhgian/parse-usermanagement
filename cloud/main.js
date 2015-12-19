@@ -1,4 +1,5 @@
 Parse.Cloud.useMasterKey();
+var _ = require('underscore');
 var stsi_id = 'GnyLYhHwNT';
 
 // EndPoint:
@@ -95,6 +96,110 @@ Parse.Cloud.define("updateUser", function (request, response) {
             // error is a Parse.Error with an error code and message.
             response.error(error);
         }
+    });
+});
+
+Parse.Cloud.define("createDiscussionBoard", function (request, response) {
+    var Con = Parse.Object.extend('Conference');
+    var con = new Con();
+    con.id = request.params.conId;
+
+    // Create Event object and query
+    var Event = Parse.Object.extend("Event");
+    var query = new Parse.Query(Event);
+    var list = [];
+
+    // Query for events that do not have discussion board.
+    query.doesNotExist("board");
+    var qPromise = query.find({
+        success: function (data) {
+            data.forEach(function (val, key) {
+                var Board = Parse.Object.extend("DiscussionBoard");
+                var board = new Board();
+                board.set('conference', con); // Add Conference pointer
+                board.set('hasQuestions', false); // Add Conference pointer
+                board.set('event', data[key]); // Add Event pointer
+                data[key].set('board', board);
+            });
+            list = data;
+        }
+    });
+
+    // Wait for promise to resolve
+    qPromise.then(function () {
+        Parse.Object.saveAll(list, {
+            success: function (data) {
+                console.log('Number of objects saved: ' + data.length);
+                response.success(data);
+            },
+            error: function (error) {
+                response.error(error);
+            }
+        });
+    });
+});
+
+Parse.Cloud.define("populateEventRelationsInSpeakers", function (request, response) {
+
+    var Conference = Parse.Object.extend('Conference');
+    var conference = new Conference();
+    conference.id = request.params.conId;
+
+
+    //query speakers
+    var Speaker = Parse.Object.extend("Speaker");
+    var querySpeaker = new Parse.Query(Speaker);
+    querySpeaker.equalTo('conference', conference);
+    var speakerList = [];
+
+    //query events speaker relations
+    var Event = Parse.Object.extend("Event");
+    var queryEvent = new Parse.Query(Event);
+    queryEvent.equalTo('conference', conference);
+    var eventList = [];
+
+    querySpeaker.find({
+        success: function (results) {
+            console.log("Successfully retrieved " + results.length + " speakers.");
+            speakerList = results;
+        },
+        error: function (error) {
+            console.log("Error: " + error.code + " " + error.message);
+            response.error(error);
+        }
+    }).then(function () {
+        return queryEvent.find({
+            success: function (results) {
+                console.log("Successfully retrieved " + results.length + " events.");
+                eventList = results;
+            },
+            error: function (error) {
+                console.log("Error: " + error.code + " " + error.message);
+                response.error(error);
+            }
+        });
+    }).then(function () {
+        _.each(eventList, function (e) {
+            e.relation("speakers").query().find({
+                success: function (res) {
+                    console.log("Successfully retrieved " + res + " events speakers.");
+                    _.each(res, function (r) {
+                        for (var index = 0; index < speakerList.length; index++) {
+                            if (r.id === speakerList[index].id) {
+                                speakerList[index].relation("event").add(e);
+                                speakerList[index].save();
+                                console.log('saved');
+                                break;
+                            }
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.log("Error: " + error.code + " " + error.message);
+                    response.error(error);
+                }
+            });
+        });
     });
 });
 
