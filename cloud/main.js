@@ -454,6 +454,10 @@ Parse.Cloud.afterSave('MasterNotification', function (request) {
 
 Parse.Cloud.afterSave('Note', function (request) {
 
+    //Add Note to the user
+    request.user.relation('Note').add(request.object);
+    request.user.save();
+
     var Object = Parse.Object.extend('Note');
     var queryObj = new Parse.Query(Object);
     queryObj.get(request.object.id, {
@@ -463,8 +467,8 @@ Parse.Cloud.afterSave('Note', function (request) {
             acl.setPublicWriteAccess(false);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
-            acl.setRoleWriteAccess('User', true);
-            acl.setRoleReadAccess('User', true);
+            acl.setWriteAccess(request.user, true);
+            acl.setReadAccess(request.user, true);
             object.setACL(acl);
             object.save();
 
