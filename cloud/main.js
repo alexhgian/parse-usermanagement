@@ -400,7 +400,7 @@ Parse.Cloud.afterSave('LinkedInUser', function (request) {
     queryObj.get(request.object.id, {
         success: function (object) {
             var acl = new Parse.ACL();
-            acl.setPublicReadAccess(false);
+            acl.setPublicReadAccess(true);
             acl.setPublicWriteAccess(false);
             acl.setRoleWriteAccess('Admin', true);
             acl.setRoleReadAccess('Admin', true);
@@ -696,7 +696,7 @@ Parse.Cloud.define("authorizeLinkedIn", function (request, response) {
         response.success(httpResponse.data);
     }, function (httpResponse) {
         console.error('Request failed with response code ' + httpResponse.status);
-        response.error(httpResponse);
+        response.error(httpResponse.data);
     });
 
 
@@ -717,4 +717,44 @@ Parse.Cloud.define("getLinkedInProfile", function (request, response) {
         console.error('Request failed with response code ' + httpResponse.status);
         response.error(httpResponse.status);
     });
+});
+
+Parse.Cloud.define("twitterOAuth", function (request, response) {
+
+    if(request.params.actionType === 0){
+        Parse.Cloud.httpRequest({
+            method: 'POST',
+            url: "https://api.twitter.com/oauth/request_token",
+            headers: {
+                Authorization: request.params.authSign,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            params: {
+                oauth_callback: request.params.redirectUri
+            }
+        }).then(function (httpResponse) {
+            response.success(httpResponse.text);
+        }, function (httpResponse) {
+            console.error('Request failed with response code ' + httpResponse.status);
+            response.error(httpResponse.data);
+        });
+    } else {
+        Parse.Cloud.httpRequest({
+            method: 'POST',
+            url: "https://api.twitter.com/oauth/access_token",
+            headers: {
+                Authorization: request.params.authSign
+            },
+            params: {
+                oauth_verifier: request.params.authVerify
+            }
+        }).then(function (httpResponse) {
+            console.log(httpResponse.text);
+            response.success(httpResponse.text);
+        }, function (httpResponse) {
+            console.error('Request failed with response code ' + httpResponse.status);
+            response.error(httpResponse.data);
+        });
+    }
+
 });
