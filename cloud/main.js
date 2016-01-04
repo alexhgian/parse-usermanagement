@@ -548,6 +548,39 @@ Parse.Cloud.afterSave('Session', function (request) {
 
 });
 
+Parse.Cloud.afterSave('Attendee', function (request) {
+
+    var Object = Parse.Object.extend('Attendee');
+    var queryObj = new Parse.Query(Object);
+    queryObj.include('conference');
+    queryObj.get(request.object.id, {
+        success: function (object) {
+            var acl = new Parse.ACL();
+            acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
+            acl.setRoleWriteAccess('Admin', true);
+            acl.setRoleReadAccess('Admin', true);
+            acl.setRoleWriteAccess('Editor', true);
+            acl.setRoleReadAccess('Editor', true);
+            acl.setRoleReadAccess('User', true);
+
+            //Get Organization
+            //Assign Organization role to ACL
+            if (object.get('conference').get('organization').id === stsi_id) {
+                acl.setRoleWriteAccess('STSIAdmin', true);
+                acl.setRoleReadAccess('STSIAdmin', true);
+                object.setACL(acl);
+                object.save();
+            }
+        },
+        error: function (error) {
+            throw "Got an error " + error.code + " : " + error.message;
+        }
+    });
+
+});
+
+
 Parse.Cloud.afterSave('Speaker', function (request) {
 
     var Object = Parse.Object.extend('Speaker');
@@ -646,7 +679,7 @@ Parse.Cloud.afterSave('TravelBusiness', function (request) {
 
 Parse.Cloud.afterSave('Votes', function (request) {
 
-    var Object = Parse.Object.extend('TravelBusiness');
+    var Object = Parse.Object.extend('Votes');
     var queryObj = new Parse.Query(Object);
     queryObj.get(request.object.id, {
         success: function (object) {
