@@ -271,6 +271,8 @@ Parse.Cloud.afterSave('Conference', function (request) {
             acl.setRoleWriteAccess('Editor', true);
             acl.setRoleReadAccess('Editor', true);
             acl.setRoleReadAccess('User', true);
+            acl.setRoleWriteAccess('User', true);
+
 
             //Get Organization
             //Assign Organization role to ACL
