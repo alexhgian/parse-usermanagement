@@ -2,6 +2,46 @@ Parse.Cloud.useMasterKey();
 var _ = require('underscore');
 var stsi_id = 'GnyLYhHwNT';
 
+Parse.Cloud.define("cleanACL", function (request, response) {
+        
+        
+    var Event = Parse.Object.extend("Event");
+    var Query = new Parse.Query(Event);
+    var acl = new Parse.ACL();
+    acl.setPublicWriteAccess(false);
+    acl.setPublicReadAccess(true);
+    acl.setRoleWriteAccess('Admin', true);
+    acl.setRoleReadAccess('Admin', true);
+    acl.setRoleWriteAccess('Editor', true);
+    acl.setRoleReadAccess('Editor', true);
+    acl.setRoleReadAccess('User', true);
+    acl.setRoleWriteAccess('User', true);
+
+    var Con = Parse.Object.extend("Conference");
+    var con = new Con();
+    con.id = 'SkdlkXW1JA';
+
+    Query.limit(1000);
+    Query.equalTo('conference', con);
+
+    Query.find().then(function(res){
+        for(var i=0; i < res.length; i++){
+            console.log(res.length);
+            res[i].setACL(acl);
+            res[i].save();
+            if(i === res.length-1){
+              //response.success(res.length);
+            }
+        }
+    });
+
+
+
+});
+
+
+
+
 // EndPoint:
 //  https://api.parse.com/1/functions/deleteUser
 //
@@ -139,6 +179,8 @@ Parse.Cloud.define("createDiscussionBoard", function (request, response) {
     });
 });
 
+
+
 Parse.Cloud.define("populateEventRelationsInSpeakers", function (request, response) {
 
     var Conference = Parse.Object.extend('Conference');
@@ -157,6 +199,8 @@ Parse.Cloud.define("populateEventRelationsInSpeakers", function (request, respon
     var queryEvent = new Parse.Query(Event);
     queryEvent.equalTo('conference', conference);
     var eventList = [];
+
+    var iosCache = Parse.Object.extend('IOS_SPEAKER_EVENT_CACHE');
 
     querySpeaker.find({
         success: function (results) {
@@ -186,6 +230,13 @@ Parse.Cloud.define("populateEventRelationsInSpeakers", function (request, respon
                     _.each(res, function (r) {
                         for (var index = 0; index < speakerList.length; index++) {
                             if (r.id === speakerList[index].id) {
+                                cacheObj = new iosCache();
+                                cacheObj.set('eventID', e.id);
+                                cacheObj.set('speakerID', r.id);
+                                cacheObj.set('eventPointer', e);
+                                cacheObj.set('speakerPointer', r);
+                                cacheObj.save();
+
                                 speakerList[index].relation("event").add(e);
                                 speakerList[index].save();
                                 console.log('saved');
@@ -202,6 +253,23 @@ Parse.Cloud.define("populateEventRelationsInSpeakers", function (request, respon
         });
     });
 });
+
+Parse.Cloud.beforeSave('IOS_SPEAKER_EVENT_CACHE', function (request, response) {
+   
+        //prevent duplicates, remove if any
+        var iosCache = Parse.Object.extend('IOS_SPEAKER_EVENT_CACHE');
+        var cacheQuery = new Parse.Query(iosCache);
+        cacheQuery.equalTo('eventID', request.object.eventID);
+        cacheQuery.equalTo('speakerID', request.object.speakerID);
+        cacheQuery.first().then(function(obj){
+            if(obj) {
+                response.error();
+            } else {
+                response.success();
+            }
+        }); 
+});
+
 
 
 Parse.Cloud.afterSave(Parse.User, function (request) {
@@ -377,7 +445,7 @@ Parse.Cloud.afterSave('Event', function (request) {
             acl.setRoleWriteAccess('Editor', true);
             acl.setRoleReadAccess('Editor', true);
             acl.setRoleReadAccess('User', true);
-
+            acl.setRoleWriteAccess('User', true);
             //Get Organization
             //Assign Organization role to ACL
             if (object.get('conference').get('organization').id === stsi_id) {
@@ -756,7 +824,7 @@ Parse.Cloud.define("getLinkedInProfile", function (request, response) {
 
 Parse.Cloud.define("twitterOAuth", function (request, response) {
 
-    if(request.params.actionType === 0){
+    if (request.params.actionType === 0) {
         Parse.Cloud.httpRequest({
             method: 'POST',
             url: "https://api.twitter.com/oauth/request_token",
@@ -793,3 +861,82 @@ Parse.Cloud.define("twitterOAuth", function (request, response) {
     }
 
 });
+
+Parse.Cloud.define("twitterProfile", function (request, response) {
+
+    var oauth = require('cloud/oauth.js');
+    var sha = require('cloud/sha1.js');
+
+    var urlLink = "https://api.twitter.com/1.1/users/show.json" + '?user_id=' + request.params.userId;
+
+    var consumerSecret = 'zrsg7kCincIM0fqig4CJk0laliX5tUpsrSmgMyQdjqBcHhZtY4';
+    var tokenSecret = "LBTeH8rzYuxJY2aTjE5kTycKwTR40RAmYUMw9JRVvAPmS";
+    var oauth_consumer_key = "0ZV9x1zOTs5nXcaFRS3eIengI";
+    var oauth_token = "42826549-Vptwqzarjt75QPfeKtHELgXAnpbQDvj25Tx7H00rK";
+
+    var nonce = oauth.nonce(32);
+    var ts = Math.floor(new Date().getTime() / 1000);
+    var timestamp = ts.toString();
+
+    var accessor = {
+        "consumerSecret": consumerSecret,
+        "tokenSecret": tokenSecret
+    };
+
+
+    var params = {
+        "oauth_version": "1.0",
+        "oauth_consumer_key": oauth_consumer_key,
+        "oauth_token": oauth_token,
+        "oauth_timestamp": timestamp,
+        "oauth_nonce": nonce,
+        "oauth_signature_method": "HMAC-SHA1"
+    };
+    var message = {
+        "method": "GET",
+        "action": urlLink,
+        "parameters": params
+    };
+
+
+    //lets create signature
+    oauth.SignatureMethod.sign(message, accessor);
+    var normPar = oauth.SignatureMethod.normalizeParameters(message.parameters);
+    console.log("Normalized Parameters: " + normPar);
+    var baseString = oauth.SignatureMethod.getBaseString(message);
+    console.log("BaseString: " + baseString);
+    var sig = oauth.getParameter(message.parameters, "oauth_signature") + "=";
+    console.log("Non-Encode Signature: " + sig);
+    var encodedSig = oauth.percentEncode(sig); //finally you got oauth signature
+    console.log("Encoded Signature: " + encodedSig);
+
+    //lets create signature
+    oauth.SignatureMethod.sign(message, accessor);
+    var normPar = oauth.SignatureMethod.normalizeParameters(message.parameters);
+    console.log("Normalized Parameters: " + normPar);
+    var baseString = oauth.SignatureMethod.getBaseString(message);
+    console.log("BaseString: " + baseString);
+    var sig = oauth.getParameter(message.parameters, "oauth_signature") + "=";
+    console.log("Non-Encode Signature: " + sig);
+    var encodedSig = oauth.percentEncode(sig); //finally you got oauth signature
+    console.log("Encoded Signature: " + encodedSig);
+
+    Parse.Cloud.httpRequest({
+        method: 'GET',
+        url: "https://api.twitter.com/1.1/users/show.json" + '?user_id=' + request.params.userId,
+        headers: {
+            "Authorization": 'OAuth oauth_consumer_key="'+oauth_consumer_key+'", oauth_nonce=' + nonce + ', oauth_signature=' + encodedSig + ', oauth_signature_method="HMAC-SHA1", oauth_timestamp=' + timestamp + ',oauth_token="'+oauth_token+'", oauth_version="1.0"'
+        }
+    }).then(function (httpResponse) {
+        console.log(httpResponse.text);
+        response.success(httpResponse.data);
+    }, function (httpResponse) {
+        console.error('Request failed with response code ' + httpResponse.status);
+        response.error(httpResponse.data);
+    });
+});
+
+
+
+
+
